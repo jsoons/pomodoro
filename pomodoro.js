@@ -5,8 +5,16 @@ const POMODORO_STATES = {
     WORK: "work",
     REST: "rest"
 };
+
+const STATES = {
+  STARTED : "started",
+  STOPPED : "stopped",
+  PAUSED : "paused"
+};
+
 const WORKING_TIME_LENGTH_IN_MINUTES=2; //25
 const RESTING_TIME_LENGTH_IN_MINUTES=1; //5
+
 
 
 new Vue ({
@@ -15,18 +23,38 @@ new Vue ({
     minute: WORKING_TIME_LENGTH_IN_MINUTES,
     second: 0,
     pomodoroState: POMODORO_STATES.WORK,
-    timestamp: 0
+    // timestamp: 0,
+    state: STATES.STOPPED
   }, //end of data obect
-  computed:{
+  computed: {
     title: function() {
       return (this.pomodoroState===POMODORO_STATES.WORK)?"Work":"Rest"
-    } //end of title function
+    }, //end of title function
+    min: function() {
+      return this.minute>10?this.minute:"0"+this.minute
+    }, //end of min function
+    sec: function() {
+      return this.second>10?this.second:"0"+this.second
+    } //end of sec function
   }, //end of computed object
   methods: {
     start: function(){
+      this.state=STATES.STARTED;
       this._tick();
       this.interval= setInterval(this._tick,100); //1000
     },
+    pause: function() {
+      this.state = STATES.PAUSED;
+      clearInterval(this.interval);
+    },
+    stop: function () {
+      this.state=STATES.STOPPED;
+      clearInterval(this.interval);
+      this.pomodoroState=POMODORO_STATES.WORK;
+      this.minute=WORKING_TIME_LENGTH_IN_MINUTES;
+      this.second=0;
+    },
+
     _tick: function() {
       if (this.second !== 0) {
         this.second--;
